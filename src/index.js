@@ -77,49 +77,55 @@ function Menu() {
   return (
     <main className="menu">
       <h2>Our Menu</h2>
-      {/* react dont have boolean value, but render value, then use condition */}
-      {numPizzas > 0 && (
-        <ul className="pizzas">
-          {pizzas.map((pizza) => (
-            /** making into object to render all data in array using MAP, but each needs a uniqe key property ***/
-            <Pizza pizzaObk={pizza} key={pizza.name} />
-          ))}
-        </ul>
-      )}
 
-      {/* <Pizza
-        name="Pizza Spinaci"
-        ingredients="Tomato, mozarella, spinach"
-        photo="pizzas/spinaci.jpg"
-        price={10}
-      />
-      
-      <Pizza
-        name="Pizza Funghi"
-        ingredients="Tomato, mushrooms"
-        photo="pizzas/funghi.jpg"
-        // use object for numbers
-        price={12}
-      /> */}
+      {/* react dont have boolean value, but render value, then use condition to make a true or false */}
+      {numPizzas > 0 ? (
+        // React fragment is like div but no trace in html tree, invicible wall
+        <>
+          <p> Authentic Italian cuisine from our stone oven, all organic.</p>
+          <ul className="pizzas">
+            {pizzas.map((pizza) => (
+              /** making into object to render all data in array using MAP, but each needs a uniqe key property ***/
+              <Pizza pizzaObk={pizza} key={pizza.name} />
+            ))}
+          </ul>
+        </>
+      ) : (
+        <p>Please come back later.</p>
+      )}
     </main>
   );
 }
 
 // ############ PROPS/PROPERTY
-// 1. pass props in the compon ent
+// 1. pass props in the component
 // 2. receive the props in the component
 // can pass anything even other components
 // IMMUTABLE - read-only, only used states
 
-function Pizza(props) {
-  console.log(props);
+function Pizza({ pizzaObk }) {
+  console.log(pizzaObk);
+
+  // we can always call many return in a conditional statement inside a component
+  // if (pizzaObk.soldOut) return null;
+
   return (
-    <li className="pizza">
-      <img src={props.pizzaObk.photoName} alt={props.name} />
+    // setting classes and text conditionally, instead of classlist property
+    <li className={`pizza ${pizzaObk.soldOut ? "sold-out" : ""}`}>
+      <img src={pizzaObk.photoName} alt={pizzaObk.name} />
       <div>
-        <h2>{props.pizzaObk.name}</h2>
-        <p>{props.pizzaObk.ingredients}</p>
-        <span>Price: {props.pizzaObk.price + 3}</span>
+        <h2>{pizzaObk.name}</h2>
+        <p>{pizzaObk.ingredients}</p>
+
+        {/* reference to code below
+        {pizzaObk.soldOut ? (
+          <span>"Sold Out"</span>
+        ) : (
+          <span>{pizzaObk.price}</span>
+        )} */}
+
+        {/* this is cleaner than the above code */}
+        <span>Price: {pizzaObk.soldOut ? '"Sold Out"' : pizzaObk.price}</span>
       </div>
     </li>
   );
@@ -129,28 +135,33 @@ function Pizza(props) {
 
 function Footer() {
   const hour = new Date().getHours();
-  const openHour = 8;
+  const openHour = 12;
   const closeHour = 22;
   const isOpen = hour >= openHour && hour <= closeHour;
 
   return (
     <footer className="footer">
       {/* short circuiting if its true then trigger comment, with iterenary operator */}
-      {/* {isOpen && (
+      {isOpen ? (
+        <Order closeHour={closeHour} openHour={openHour} />
+      ) : (
         <div className="order">
-          <p>We are open from {openHour}.00</p>
+          <p>
+            We are open from {openHour} to {closeHour}.
+          </p>
+          <button className="btn">Order</button>
         </div>
       )}
-
-      {!isOpen && (
-        <div className="order">
-          <p>We are closed</p>
-        </div>
-      )} */}
-      <div className="order">
-        <p>{isOpen ? `We are open from ${openHour}.00` : "We are closed"}</p>
-      </div>
     </footer>
+  );
+}
+
+function Order({ closeHour }) {
+  return (
+    <div className="order">
+      <p>We are open until {closeHour}.00</p>
+      <button className="btn">Order</button>
+    </div>
   );
 }
 
